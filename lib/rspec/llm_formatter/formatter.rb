@@ -20,8 +20,7 @@ module RSpec
         output.puts color("FAIL #{@failure_index}) #{example.full_description}", :failure)
         output.puts "  #{example.location_rerun_argument}"
 
-        notification.message_lines.each do |line|
-          next if line.strip.empty?
+        filter_message_lines(notification.message_lines).each do |line|
           output.puts "  #{line}"
         end
 
@@ -54,6 +53,34 @@ module RSpec
       end
 
       private
+
+      def filter_message_lines(lines)
+        lines = lines.reject { |line| line.strip.empty? }
+        lines = strip_comparison_method(lines)
+        strip_trivial_diff(lines)
+      end
+
+      # Remove "(compared using ==)" and similar — always noise
+      def strip_comparison_method(lines)
+        lines.reject { |line| line.strip.match?(/\A\(compared using .*\)\z/) }
+      end
+
+      # Remove Diff: blocks that have a single hunk with ≤2 content lines,
+      # since expected/got already shows the same info.
+      # Keep multi-line diffs — they show structural differences.
+      def strip_trivial_diff(lines)
+        diff_start = lines.index { |l| l.strip == "Diff:" }
+        return lines unless diff_start
+
+        diff_lines = lines[(diff_start + 1)..]
+        content_lines = diff_lines.reject { |l| l.strip.match?(/\A@@.*@@\z/) }
+
+        if content_lines.size <= 2
+          lines[0...diff_start]
+        else
+          lines
+        end
+      end
 
       def color(text, status)
         return text unless color_enabled?
