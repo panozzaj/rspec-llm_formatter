@@ -6,7 +6,7 @@ Token-optimized RSpec formatter for LLM/agent consumption. Zero output for passi
 
 ```ruby
 # Gemfile
-gem "rspec-llm_formatter", group: :test
+gem "rspec-llm_formatter", git: "https://github.com/panozzaj/rspec-token-optimized-formatter.git", group: :test
 ```
 
 ## Usage

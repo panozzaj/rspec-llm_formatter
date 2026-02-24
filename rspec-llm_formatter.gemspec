@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.description = "An RSpec formatter that minimizes output tokens while preserving " \
                      "full failure details. Zero output for passing tests, compact " \
                      "summary, no ANSI colors."
-  spec.homepage = "https://github.com/panozzaj/rspec-llm_formatter"
+  spec.homepage = "https://github.com/panozzaj/rspec-token-optimized-formatter"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 2.5.0"
 
