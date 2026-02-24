@@ -43,7 +43,6 @@ FAIL 1) User#full_name returns first and last name
   Failure/Error: expect(user.full_name).to eq("Jane Doe")
     expected: "Jane Doe"
          got: "Jane"
-    (compared using ==)
   # ./spec/models/user_spec.rb:17
 FAIL 2) Api::UsersController#index returns paginated results
   ./spec/controllers/users_controller_spec.rb:42
@@ -60,11 +59,35 @@ Seed: 12345
 0 examples (none ran) in <1ms
 ```
 
+## Token Savings
+
+Measured with tiktoken (cl100k_base). See `script/count_tokens.py`.
+
+**All passing (25 examples):**
+
+| Formatter | Tokens |
+|---|---|
+| `documentation` | 121 |
+| `progress` | 29 |
+| **`llm_formatter`** | **11** |
+
+91% fewer tokens vs documentation, 62% vs progress.
+
+**With failures (26 examples, 3 failures):**
+
+| Formatter | Tokens |
+|---|---|
+| `documentation` | 512 |
+| `progress` | 370 |
+| **`llm_formatter`** | **286** |
+
+44% fewer tokens vs documentation, 23% vs progress. Redundant diffs and comparison method boilerplate are stripped; multi-line structural diffs are preserved.
+
 ## Design
 
 - **Zero output for passing tests** — no dots, no descriptions
 - **No ANSI color codes** by default — but respects `--color`/`--force-color` for terminal use
-- **Compact failure details** — description, location, error message, filtered backtrace
+- **Compact failure details** — description, location, error message, filtered backtrace; redundant diffs and boilerplate stripped
 - **Smart duration** — `<1ms`, `15ms`, `2.3s`, `1m30s`
 - **Pending counted, not listed** — LLMs don't need to action pending tests
 - **Zero-examples warning** — `0 examples (none ran)` prevents false confidence
